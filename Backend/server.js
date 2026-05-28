@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 dotenv.config();
 
 connectDB();
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 
