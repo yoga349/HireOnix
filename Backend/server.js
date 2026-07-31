@@ -9,6 +9,8 @@ import jobRoutes from "./routes/jobRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import savedJobRoutes from "./routes/savedJobRoutes.js";
+
 dotenv.config();
 
 connectDB();
@@ -24,6 +26,7 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/saved-jobs", savedJobRoutes);
 
 const PORT = process.env.PORT || 5000;
 
