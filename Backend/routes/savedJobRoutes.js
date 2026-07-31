@@ -6,6 +6,8 @@ import {
 } from "../controllers/savedJobController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
+import { candidateOnly } from "../middleware/roleMiddleware.js";
+
 
 const router = express.Router();
 
