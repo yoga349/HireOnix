@@ -2,9 +2,7 @@ import Application from "../models/Application.js";
 import Job from "../models/Job.js";
 import Notification from "../models/Notification.js";
 
-/* ==============================
-   Candidate Apply for Job
-============================== */
+
 
 export const applyJob = async (req, res) => {
   try {
@@ -55,9 +53,7 @@ export const applyJob = async (req, res) => {
   }
 };
 
-/* ==============================
-   Candidate Applied Jobs
-============================== */
+
 
 export const getMyApplications = async (req, res) => {
   try {
@@ -79,9 +75,7 @@ export const getMyApplications = async (req, res) => {
   }
 };
 
-/* ==============================
-   Recruiter View Applicants
-============================== */
+
 
 export const getApplicants = async (req, res) => {
   try {
@@ -103,9 +97,7 @@ export const getApplicants = async (req, res) => {
   }
 };
 
-/* ==============================
-   Recruiter Update Status
-============================== */
+
 
 export const updateApplicationStatus = async (req, res) => {
   try {
