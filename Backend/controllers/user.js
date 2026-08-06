@@ -1,5 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import sendEmail from "../utils/sendEmail.js";
+import { welcomeEmail } from "../templates/welcomeMail.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -32,12 +34,17 @@ export const registerUser = async (req, res) => {
       role,
     });
 
+    await sendEmail(
+      user.email,
+      "Welcome to Hireonix 🎉",
+      welcomeEmail(user.name),
+    );
+
     res.status(201).json({
       success: true,
       message: "User registered successfully",
       user,
     });
-
   } catch (error) {
     res.status(500).json({
       message: error.message,
