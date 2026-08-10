@@ -223,3 +223,55 @@ export const deleteJob = async (req, res) => {
     });
   }
 };
+
+// Get all applications
+export const getAllApplications = async (req, res) => {
+  try {
+    const applications = await Application.find()
+      .populate("candidate", "name email profilePhoto")
+      .populate("job", "title company")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      totalApplications: applications.length,
+      applications,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// Delete application
+export const deleteApplication = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const application = await Application.findById(id);
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    await application.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Application deleted successfully",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
