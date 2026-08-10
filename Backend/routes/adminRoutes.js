@@ -5,6 +5,8 @@ import {
   getAdminDashboard,
   getAllUsers,
   deleteUser,
+  getAllJobs,
+  deleteJob,
 } from "../controllers/adminController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -35,5 +37,20 @@ router.delete(
   protect,
   adminOnly,
   deleteUser
+);
+
+// Jobs
+router.get(
+  "/jobs",
+  protect,
+  adminOnly,
+  getAllJobs
+);
+
+router.delete(
+  "/jobs/:id",
+  protect,
+  adminOnly,
+  deleteJob
 );
 export default router;

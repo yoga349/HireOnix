@@ -172,3 +172,54 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
+
+// Get all jobs
+export const getAllJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find()
+      .populate("recruiter", "name email")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      totalJobs: jobs.length,
+      jobs,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// Delete job
+export const deleteJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const job = await Job.findById(id);
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    await job.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Job deleted successfully",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
