@@ -5,7 +5,9 @@ import {
   getAllJobs,
   getJobById,
   updateJob,
+  updateExpiredJobs,
 } from "../controllers/jobControllers.js";
+
 
 import { protect } from "../middleware/authMiddleware.js";
 import { recruiterOnly } from "../middleware/roleMiddleware.js";
@@ -21,5 +23,8 @@ router.get("/:id", getJobById);
 router.put("/:id", protect, recruiterOnly, updateJob);
 
 router.delete("/:id", protect, recruiterOnly, deleteJob);
+
+router.patch("/update-expired", protect, recruiterOnly,updateExpiredJobs);
+
 
 export default router;

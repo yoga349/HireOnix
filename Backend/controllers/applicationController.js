@@ -6,9 +6,7 @@ import sendEmail from "../utils/sendEmail.js";
 import { applicationMail } from "../templates/applicationMail.js";
 import { statusMail } from "../templates/statusMail.js";
 
-
-   //Candidate Apply for Job
-
+//Candidate Apply for Job
 
 export const applyJob = async (req, res) => {
   try {
@@ -16,6 +14,24 @@ export const applyJob = async (req, res) => {
 
     // Check job exists
     const job = await Job.findById(jobId);
+
+    // Check if job is expired
+    if (job.deadline && new Date(job.deadline) < new Date()) {
+      job.status = "expired";
+      await job.save();
+
+      return res.status(400).json({
+        success: false,
+        message: "This job has expired and is no longer accepting applications",
+      });
+    }
+
+    if (job.status !== "active") {
+  return res.status(400).json({
+    success: false,
+    message: "This job is no longer accepting applications",
+  });
+}
 
     if (!job) {
       return res.status(404).json({
@@ -57,7 +73,7 @@ export const applyJob = async (req, res) => {
       await sendEmail(
         recruiter.email,
         "New Job Application",
-        applicationMail(req.user.name, job.title)
+        applicationMail(req.user.name, job.title),
       );
     }
 
@@ -66,7 +82,6 @@ export const applyJob = async (req, res) => {
       message: "Application submitted successfully",
       application,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -75,9 +90,7 @@ export const applyJob = async (req, res) => {
   }
 };
 
-
-   //Candidate Applied Jobs
-
+//Candidate Applied Jobs
 
 export const getMyApplications = async (req, res) => {
   try {
@@ -91,7 +104,6 @@ export const getMyApplications = async (req, res) => {
       success: true,
       applications,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -100,9 +112,7 @@ export const getMyApplications = async (req, res) => {
   }
 };
 
-
-   //Recruiter View Applicants
-
+//Recruiter View Applicants
 
 export const getApplicants = async (req, res) => {
   try {
@@ -133,7 +143,6 @@ export const getApplicants = async (req, res) => {
       success: true,
       applications,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -142,9 +151,7 @@ export const getApplicants = async (req, res) => {
   }
 };
 
-
-  // Recruiter Update Status
-
+// Recruiter Update Status
 
 export const updateApplicationStatus = async (req, res) => {
   try {
@@ -161,10 +168,7 @@ export const updateApplicationStatus = async (req, res) => {
     }
 
     // Only owner recruiter can update status
-    if (
-      application.job.recruiter.toString() !==
-      req.user._id.toString()
-    ) {
+    if (application.job.recruiter.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: "Access denied",
@@ -189,7 +193,7 @@ export const updateApplicationStatus = async (req, res) => {
       await sendEmail(
         candidate.email,
         "Application Status Updated",
-        statusMail(application.job.title, status)
+        statusMail(application.job.title, status),
       );
     }
 
@@ -198,7 +202,6 @@ export const updateApplicationStatus = async (req, res) => {
       message: "Application status updated successfully",
       application,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,

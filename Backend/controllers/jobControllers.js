@@ -219,3 +219,35 @@ export const deleteJob = async (req, res) => {
     });
   }
 };
+
+export const updateExpiredJobs = async (req, res) => {
+  try {
+    const result = await Job.updateMany(
+      {
+        deadline: {
+          $lt: new Date(),
+        },
+        status: "active",
+      },
+      {
+        $set: {
+          status: "expired",
+        },
+      }
+    );
+
+    
+
+    return res.status(200).json({
+      success: true,
+      message: "Expired jobs updated successfully",
+      expiredJobs: result.modifiedCount,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

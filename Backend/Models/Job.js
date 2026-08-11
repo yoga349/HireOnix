@@ -65,6 +65,12 @@ const jobSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    
+    status: {
+      type: String,
+      enum: ["active", "expired", "closed"],
+      default: "active",
+    },
 
     recruiter: {
       type: mongoose.Schema.Types.ObjectId,
@@ -74,7 +80,7 @@ const jobSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Job = mongoose.model("Job", jobSchema);
