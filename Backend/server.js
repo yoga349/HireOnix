@@ -15,6 +15,7 @@ import recruiterDashboardRoutes from "./routes/recruiterDashboardRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import companyRoutes from "./routes/companyRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js"
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use("/api/recruiter-dashboard", recruiterDashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/admin",adminRoutes)
+app.use("/api/analytics", analyticsRoutes);
 
 const PORT = process.env.PORT || 5000;
 
