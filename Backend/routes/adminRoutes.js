@@ -9,6 +9,8 @@ import {
   deleteJob,
   getAllApplications,
   deleteApplication,
+  getAllCompanies,
+  deleteCompany,
 } from "../controllers/adminController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -35,5 +37,10 @@ router.delete("/jobs/:id",protect,adminOnly,deleteJob);
 router.get("/applications",protect,adminOnly,getAllApplications);
 
 router.delete("/applications/:id",protect,adminOnly,deleteApplication);
+
+// Companies
+router.get("/companies",protect,adminOnly,getAllCompanies);
+
+router.delete("/companies/:id",protect,adminOnly,deleteCompany);
 
 export default router;

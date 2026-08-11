@@ -275,3 +275,54 @@ export const deleteApplication = async (req, res) => {
     });
   }
 };
+
+// Get all companies
+export const getAllCompanies = async (req, res) => {
+  try {
+    const companies = await Company.find()
+      .populate("recruiter", "name email")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      totalCompanies: companies.length,
+      companies,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// Delete company
+export const deleteCompany = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const company = await Company.findById(id);
+
+    if (!company) {
+      return res.status(404).json({
+        success: false,
+        message: "Company not found",
+      });
+    }
+
+    await company.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Company deleted successfully",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
