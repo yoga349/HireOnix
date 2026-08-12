@@ -4,6 +4,7 @@ import Job from "../models/Job.js";
 import { matchJobsWithResume } from "../services/jobMatcherService.js";
 import { extractResumeText } from "../services/resumeParser.js";
 import { analyzeResume } from "../services/aiService.js";
+import { getJobRecommendations } from "../services/recommendationService.js";
 
 export const analyzeCandidateResume = async (req, res) => {
   try {
@@ -155,6 +156,88 @@ export const getJobMatches = async (req, res) => {
 
   } catch (error) {
     console.error("Job Matcher Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getRecommendations = async (req, res) => {
+  try {
+    // Get latest resume analysis
+    const resumeAnalysis = await ResumeAnalysis.findOne({
+      candidate: req.user._id,
+    }).sort({ createdAt: -1 });
+
+    if (!resumeAnalysis) {
+      return res.status(400).json({
+        success: false,
+        message: "Please analyze your resume first",
+      });
+    }
+
+    // Get active jobs
+    const jobs = await Job.find({
+      status: "active",
+    })
+      .select(
+        "title description company location skills experience jobType workMode"
+      )
+      .limit(20);
+
+    if (jobs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No active jobs available",
+      });
+    }
+
+    // Generate recommendations
+    const recommendationResult =
+      await getJobRecommendations(
+        resumeAnalysis,
+        jobs
+      );
+
+    // Attach complete job information
+    const recommendations =
+      recommendationResult.recommendations
+        .map((recommendation) => {
+          const job = jobs.find(
+            (job) =>
+              job._id.toString() === recommendation.jobId
+          );
+
+          if (!job) {
+            return null;
+          }
+
+          return {
+            job,
+            matchScore: recommendation.matchScore,
+            reason: recommendation.reason,
+          };
+        })
+        .filter(Boolean)
+        .sort(
+          (a, b) =>
+            b.matchScore - a.matchScore
+        )
+        .slice(0, 5);
+
+    return res.status(200).json({
+      success: true,
+      totalRecommendations: recommendations.length,
+      recommendations,
+    });
+
+  } catch (error) {
+    console.error(
+      "Recommendation Error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
