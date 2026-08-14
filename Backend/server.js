@@ -17,7 +17,7 @@ import companyRoutes from "./routes/companyRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
-
+import multer from "multer";
 dotenv.config();
 
 connectDB();
@@ -42,6 +42,31 @@ app.use("/api/admin",adminRoutes)
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/ai", aiRoutes);
 
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        message: "File size cannot exceed 5 MB",
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  if (err) {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  next();
+});
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
