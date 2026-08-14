@@ -128,25 +128,32 @@ export const getApplicants = async (req, res) => {
     }
 
     // Only owner recruiter can view applicants
-    if (job.recruiter.toString() !== req.user._id.toString()) {
+    if (
+      job.recruiter.toString() !==
+      req.user._id.toString()
+    ) {
       return res.status(403).json({
         success: false,
-        message: "Access denied",
+        message: "You can only view applicants for your own jobs",
       });
     }
 
     const applications = await Application.find({
       job: jobId,
-    }).populate("candidate", "-password");
+    })
+      .populate("candidate", "-password")
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
       applications,
     });
   } catch (error) {
+    console.error("Get applicants error:", error);
+
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Failed to get applicants",
     });
   }
 };
@@ -158,7 +165,8 @@ export const updateApplicationStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const application = await Application.findById(id).populate("job");
+    // Find application
+    const application = await Application.findById(id);
 
     if (!application) {
       return res.status(404).json({
@@ -167,34 +175,65 @@ export const updateApplicationStatus = async (req, res) => {
       });
     }
 
-    // Only owner recruiter can update status
-    if (application.job.recruiter.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
+    // Find related job
+    const job = await Job.findById(application.job);
+
+    if (!job) {
+      return res.status(404).json({
         success: false,
-        message: "Access denied",
+        message: "Job not found",
       });
     }
 
+    // Make sure recruiter owns the job
+    if (
+      job.recruiter.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "You can only manage applications for your own jobs",
+      });
+    }
+
+    // Update application status
     application.status = status;
 
     await application.save();
 
-    // Notify candidate
-    await Notification.create({
-      user: application.candidate,
-      title: "Application Status Updated",
-      message: `Your application for "${application.job.title}" has been updated to "${status}".`,
-    });
-
-    // Send email to candidate
-    const candidate = await User.findById(application.candidate);
-
-    if (candidate) {
-      await sendEmail(
-        candidate.email,
-        "Application Status Updated",
-        statusMail(application.job.title, status),
+    // Create notification
+    try {
+      await Notification.create({
+        user: application.candidate,
+        title: "Application Status Updated",
+        message: `Your application status has been updated to "${status}".`,
+      });
+    } catch (notificationError) {
+      console.error(
+        "Notification error:",
+        notificationError.message
       );
+    }
+
+    // Find candidate
+    const candidate = await User.findById(
+      application.candidate
+    );
+
+    // Send email
+    if (candidate?.email) {
+      try {
+        await sendEmail(
+          candidate.email,
+          "Application Status Updated",
+          statusMail(job.title, status)
+        );
+      } catch (emailError) {
+        console.error(
+          "Email error:",
+          emailError.message
+        );
+      }
     }
 
     return res.status(200).json({
@@ -203,9 +242,14 @@ export const updateApplicationStatus = async (req, res) => {
       application,
     });
   } catch (error) {
+    console.error(
+      "Update application status error:",
+      error
+    );
+
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Failed to update application status",
     });
   }
 };

@@ -6,7 +6,10 @@ import {
   getApplicants,
   updateApplicationStatus,
 } from "../controllers/applicationController.js";
-
+import { validate } from "../middleware/validationMiddleware.js";
+import {
+  updateApplicationStatusValidator,
+} from "../validators/applicationValidator.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { recruiterOnly } from "../middleware/roleMiddleware.js";
 
@@ -20,6 +23,5 @@ router.get("/my", protect, getMyApplications);
 // Recruiter
 router.get("/job/:jobId", protect, recruiterOnly, getApplicants);
 
-router.put("/:id", protect, recruiterOnly, updateApplicationStatus);
-
+router.patch("/:id/status", protect, recruiterOnly,validate(updateApplicationStatusValidator),updateApplicationStatus);
 export default router;
