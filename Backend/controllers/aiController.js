@@ -27,11 +27,21 @@ export const analyzeCandidateResume = async (req, res) => {
         message: "Please upload a resume first",
       });
     }
+    // check for the existing resume 
+    const existingAnalysis = await ResumeAnalysis.findOne({
+      candidate: req.user._id,
+      resumeUrl: profile.resume,
+    });
 
+    if (existingAnalysis) {
+      return res.status(200).json({
+        success: true,
+        message: "Resume has already been analyzed",
+        analysis: existingAnalysis,
+      });
+    }
     // Extract text from PDF
-    const resumeText = await extractResumeText(
-      profile.resume
-    );
+    const resumeText = await extractResumeText(profile.resume);
 
     if (!resumeText || !resumeText.trim()) {
       return res.status(400).json({
@@ -60,7 +70,6 @@ export const analyzeCandidateResume = async (req, res) => {
       message: "Resume analyzed successfully",
       analysis: resumeAnalysis,
     });
-
   } catch (error) {
     console.error("Resume Analyzer Error:", error);
 
@@ -75,15 +84,13 @@ export const getResumeAnalyses = async (req, res) => {
   try {
     const analyses = await ResumeAnalysis.find({
       candidate: req.user._id,
-    })
-      .sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
       total: analyses.length,
       analyses,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -111,7 +118,7 @@ export const getJobMatches = async (req, res) => {
       status: "active",
     })
       .select(
-        "title description company location skills experience jobType workMode"
+        "title description company location skills experience jobType workMode",
       )
       .limit(20);
 
@@ -123,17 +130,12 @@ export const getJobMatches = async (req, res) => {
     }
 
     // Send candidate + jobs to AI
-    const matchingResult = await matchJobsWithResume(
-      resumeAnalysis,
-      jobs
-    );
+    const matchingResult = await matchJobsWithResume(resumeAnalysis, jobs);
 
     // Attach complete job information
     const matches = matchingResult.matches
       .map((match) => {
-        const job = jobs.find(
-          (job) => job._id.toString() === match.jobId
-        );
+        const job = jobs.find((job) => job._id.toString() === match.jobId);
 
         if (!job) return null;
 
@@ -153,7 +155,6 @@ export const getJobMatches = async (req, res) => {
       totalMatches: matches.length,
       matches,
     });
-
   } catch (error) {
     console.error("Job Matcher Error:", error);
 
@@ -183,7 +184,7 @@ export const getRecommendations = async (req, res) => {
       status: "active",
     })
       .select(
-        "title description company location skills experience jobType workMode"
+        "title description company location skills experience jobType workMode",
       )
       .limit(20);
 
@@ -195,49 +196,39 @@ export const getRecommendations = async (req, res) => {
     }
 
     // Generate recommendations
-    const recommendationResult =
-      await getJobRecommendations(
-        resumeAnalysis,
-        jobs
-      );
+    const recommendationResult = await getJobRecommendations(
+      resumeAnalysis,
+      jobs,
+    );
 
     // Attach complete job information
-    const recommendations =
-      recommendationResult.recommendations
-        .map((recommendation) => {
-          const job = jobs.find(
-            (job) =>
-              job._id.toString() === recommendation.jobId
-          );
+    const recommendations = recommendationResult.recommendations
+      .map((recommendation) => {
+        const job = jobs.find(
+          (job) => job._id.toString() === recommendation.jobId,
+        );
 
-          if (!job) {
-            return null;
-          }
+        if (!job) {
+          return null;
+        }
 
-          return {
-            job,
-            matchScore: recommendation.matchScore,
-            reason: recommendation.reason,
-          };
-        })
-        .filter(Boolean)
-        .sort(
-          (a, b) =>
-            b.matchScore - a.matchScore
-        )
-        .slice(0, 5);
+        return {
+          job,
+          matchScore: recommendation.matchScore,
+          reason: recommendation.reason,
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, 5);
 
     return res.status(200).json({
       success: true,
       totalRecommendations: recommendations.length,
       recommendations,
     });
-
   } catch (error) {
-    console.error(
-      "Recommendation Error:",
-      error
-    );
+    console.error("Recommendation Error:", error);
 
     return res.status(500).json({
       success: false,

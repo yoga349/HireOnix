@@ -18,6 +18,8 @@ import adminRoutes from "./routes/adminRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import multer from "multer";
+import mongoSanitize from "express-mongo-sanitize";
+import helmet from "helmet";
 dotenv.config();
 
 connectDB();
@@ -25,8 +27,21 @@ connectDB();
 const app = express();
 
 app.use(cors());
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//   })
+// );
 app.use(express.json());
-
+// app.use(
+//   express.urlencoded({
+//     extended: true,
+//     limit: "1mb",
+//   })
+// );
+app.use(mongoSanitize());
+app.use(helmet());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/jobs", jobRoutes);
@@ -38,7 +53,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/recruiter-dashboard", recruiterDashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/company", companyRoutes);
-app.use("/api/admin",adminRoutes)
+app.use("/api/admin",adminRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/ai", aiRoutes);
 
