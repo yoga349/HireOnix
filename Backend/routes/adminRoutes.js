@@ -15,11 +15,11 @@ import {
 
 import { protect } from "../middleware/authMiddleware.js";
 import { adminOnly } from "../middleware/adminMiddleware.js";
-
+import { loginLimiter } from "../middleware/rateLimit.js";
 const router = express.Router();
 
 // Admin Login
-router.post("/login", adminLogin);
+router.post("/login",  loginLimiter,adminLogin);
 
 // Admin Dashboard
 router.get("/dashboard",protect,adminOnly,getAdminDashboard);
