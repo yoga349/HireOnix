@@ -51,7 +51,10 @@ const resumeAnalysisSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
+resumeAnalysisSchema.index({
+  candidate: 1,
+  createdAt: -1,
+});
 const ResumeAnalysis = mongoose.model(
   "ResumeAnalysis",
   resumeAnalysisSchema

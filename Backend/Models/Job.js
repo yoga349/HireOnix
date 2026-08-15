@@ -82,6 +82,10 @@ const jobSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+jobSchema.index({ recruiter: 1 });
+jobSchema.index({ status: 1 });
+jobSchema.index({ deadline: 1 });
+jobSchema.index({ status: 1, createdAt: -1 });
 
 const Job = mongoose.model("Job", jobSchema);
 

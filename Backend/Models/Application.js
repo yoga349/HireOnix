@@ -31,6 +31,10 @@ const applicationSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+applicationSchema.index({ candidate: 1 });
+applicationSchema.index({ job: 1 });
+applicationSchema.index({ candidate: 1, job: 1 }, { unique: true });
+applicationSchema.index({ job: 1, status: 1 });
 
 const Application = mongoose.model(
   "Application",
@@ -38,3 +42,4 @@ const Application = mongoose.model(
 );
 
 export default Application;
+
