@@ -24,12 +24,8 @@ const uploadToCloudinary = (buffer, folder, resourceType = "image") => {
 };
 
 // Resume Upload
-
 export const uploadResume = async (req, res) => {
     try {
-        console.log("User:", req.user);
-        console.log("File:", req.file);
-
         if (!req.file) {
             return res.status(400).json({
                 success: false,
@@ -42,8 +38,6 @@ export const uploadResume = async (req, res) => {
             "Hireonix/Resume",
             "image"
         );
-
-        console.log("Cloudinary Result:", result);
 
         const profile = await Profile.findOneAndUpdate(
             { user: req.user._id },
@@ -62,9 +56,8 @@ export const uploadResume = async (req, res) => {
             message: "Resume uploaded successfully",
             profile,
         });
-
     } catch (error) {
-        console.log("UPLOAD RESUME ERROR:", error);
+        console.error("Upload resume error:", error);
 
         return res.status(500).json({
             success: false,
@@ -73,13 +66,9 @@ export const uploadResume = async (req, res) => {
     }
 };
 
-// ================= Profile Photo Upload =================
-
+// Profile Photo Upload
 export const uploadProfilePhoto = async (req, res) => {
     try {
-        console.log("User:", req.user);
-        console.log("File:", req.file);
-
         if (!req.file) {
             return res.status(400).json({
                 success: false,
@@ -92,8 +81,6 @@ export const uploadProfilePhoto = async (req, res) => {
             "Hireonix/ProfilePhoto",
             "image"
         );
-
-        console.log("Cloudinary Result:", result);
 
         const profile = await Profile.findOneAndUpdate(
             { user: req.user._id },
@@ -112,9 +99,8 @@ export const uploadProfilePhoto = async (req, res) => {
             message: "Profile photo uploaded successfully",
             profile,
         });
-
     } catch (error) {
-        console.log("UPLOAD PHOTO ERROR:", error);
+        console.error("Upload profile photo error:", error);
 
         return res.status(500).json({
             success: false,
