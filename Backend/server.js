@@ -1,8 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import helmet from "helmet";
+import multer from "multer";
+
 import connectDB from "./config/db.js";
-import mongoose from "mongoose";
+
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
@@ -17,29 +20,28 @@ import companyRoutes from "./routes/companyRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
-import multer from "multer";
-import helmet from "helmet";
+
 dotenv.config();
 
 connectDB();
 
 const app = express();
 
-app.use(cors());
-// app.use(
-//   cors({
-//     origin: process.env.FRONTEND_URL,
-//     credentials: true,
-//   })
-// );
-app.use(express.json());
-// app.use(
-//   express.urlencoded({
-//     extended: true,
-//     limit: "1mb",
-//   })
-// );
+const allowedOrigins = [
+  "http://localhost:5173",
+];
+
 app.use(helmet());
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/jobs", jobRoutes);
@@ -51,10 +53,9 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/recruiter-dashboard", recruiterDashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/company", companyRoutes);
-app.use("/api/admin",adminRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/ai", aiRoutes);
-
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
@@ -80,6 +81,7 @@ app.use((err, req, res, next) => {
 
   next();
 });
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
