@@ -1,10 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
-import Job from "../models/Job.js";
-import Application from "../models/Application.js";
-import Company from "../models/Company.js";
-
+import User from "../Models/User.js";
+import Job from "../Models/Job.js";
+import Application from "../Models/Application.js";
+import Company from "../Models/Company.js";
 
 export const adminLogin = async (req, res) => {
   try {
@@ -32,10 +31,7 @@ export const adminLogin = async (req, res) => {
     }
 
     // Check password
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      admin.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(password, admin.password);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({
@@ -53,7 +49,7 @@ export const adminLogin = async (req, res) => {
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
-      }
+      },
     );
 
     return res.status(200).json({
@@ -67,7 +63,6 @@ export const adminLogin = async (req, res) => {
         role: admin.role,
       },
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -105,7 +100,6 @@ export const getAdminDashboard = async (req, res) => {
         totalCompanies,
       },
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -117,16 +111,13 @@ export const getAdminDashboard = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find()
-      .select("-password")
-      .sort({ createdAt: -1 });
+    const users = await User.find().select("-password").sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
       totalUsers: users.length,
       users,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -134,7 +125,6 @@ export const getAllUsers = async (req, res) => {
     });
   }
 };
-
 
 // Delete user
 export const deleteUser = async (req, res) => {
@@ -164,7 +154,6 @@ export const deleteUser = async (req, res) => {
       success: true,
       message: "User deleted successfully",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -185,7 +174,6 @@ export const getAllJobs = async (req, res) => {
       totalJobs: jobs.length,
       jobs,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -193,7 +181,6 @@ export const getAllJobs = async (req, res) => {
     });
   }
 };
-
 
 // Delete job
 export const deleteJob = async (req, res) => {
@@ -215,7 +202,6 @@ export const deleteJob = async (req, res) => {
       success: true,
       message: "Job deleted successfully",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -237,7 +223,6 @@ export const getAllApplications = async (req, res) => {
       totalApplications: applications.length,
       applications,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -245,7 +230,6 @@ export const getAllApplications = async (req, res) => {
     });
   }
 };
-
 
 // Delete application
 export const deleteApplication = async (req, res) => {
@@ -267,7 +251,6 @@ export const deleteApplication = async (req, res) => {
       success: true,
       message: "Application deleted successfully",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -288,7 +271,6 @@ export const getAllCompanies = async (req, res) => {
       totalCompanies: companies.length,
       companies,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -296,7 +278,6 @@ export const getAllCompanies = async (req, res) => {
     });
   }
 };
-
 
 // Delete company
 export const deleteCompany = async (req, res) => {
@@ -318,7 +299,6 @@ export const deleteCompany = async (req, res) => {
       success: true,
       message: "Company deleted successfully",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,

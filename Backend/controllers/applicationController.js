@@ -1,7 +1,7 @@
-import Application from "../models/Application.js";
-import Job from "../models/Job.js";
-import Notification from "../models/Notification.js";
-import User from "../models/User.js";
+import Application from "../Models/Application.js";
+import Job from "../Models/Job.js";
+import Notification from "../Models/Notification.js";
+import User from "../Models/User.js";
 import sendEmail from "../utils/sendEmail.js";
 import { applicationMail } from "../templates/applicationMail.js";
 import { statusMail } from "../templates/statusMail.js";
@@ -27,11 +27,11 @@ export const applyJob = async (req, res) => {
     }
 
     if (job.status !== "active") {
-  return res.status(400).json({
-    success: false,
-    message: "This job is no longer accepting applications",
-  });
-}
+      return res.status(400).json({
+        success: false,
+        message: "This job is no longer accepting applications",
+      });
+    }
 
     if (!job) {
       return res.status(404).json({
@@ -128,10 +128,7 @@ export const getApplicants = async (req, res) => {
     }
 
     // Only owner recruiter can view applicants
-    if (
-      job.recruiter.toString() !==
-      req.user._id.toString()
-    ) {
+    if (job.recruiter.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: "You can only view applicants for your own jobs",
@@ -186,13 +183,10 @@ export const updateApplicationStatus = async (req, res) => {
     }
 
     // Make sure recruiter owns the job
-    if (
-      job.recruiter.toString() !== req.user._id.toString()
-    ) {
+    if (job.recruiter.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
-        message:
-          "You can only manage applications for your own jobs",
+        message: "You can only manage applications for your own jobs",
       });
     }
 
@@ -209,16 +203,11 @@ export const updateApplicationStatus = async (req, res) => {
         message: `Your application status has been updated to "${status}".`,
       });
     } catch (notificationError) {
-      console.error(
-        "Notification error:",
-        notificationError.message
-      );
+      console.error("Notification error:", notificationError.message);
     }
 
     // Find candidate
-    const candidate = await User.findById(
-      application.candidate
-    );
+    const candidate = await User.findById(application.candidate);
 
     // Send email
     if (candidate?.email) {
@@ -226,13 +215,10 @@ export const updateApplicationStatus = async (req, res) => {
         await sendEmail(
           candidate.email,
           "Application Status Updated",
-          statusMail(job.title, status)
+          statusMail(job.title, status),
         );
       } catch (emailError) {
-        console.error(
-          "Email error:",
-          emailError.message
-        );
+        console.error("Email error:", emailError.message);
       }
     }
 
@@ -242,10 +228,7 @@ export const updateApplicationStatus = async (req, res) => {
       application,
     });
   } catch (error) {
-    console.error(
-      "Update application status error:",
-      error
-    );
+    console.error("Update application status error:", error);
 
     return res.status(500).json({
       success: false,

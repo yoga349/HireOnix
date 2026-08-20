@@ -1,10 +1,9 @@
-import Job from "../models/Job.js";
-import Application from "../models/Application.js";
+import Job from "../Models/Job.js";
+import Application from "../Models/Application.js";
 
 // Dashboard Statistics
 export const recruiterDashboard = async (req, res) => {
   try {
-
     const recruiter = req.user._id;
 
     // Jobs posted by recruiter
@@ -27,7 +26,7 @@ export const recruiterDashboard = async (req, res) => {
     // Get recruiter's jobs
     const jobs = await Job.find({ recruiter }).select("_id");
 
-    const jobIds = jobs.map(job => job._id);
+    const jobIds = jobs.map((job) => job._id);
 
     // Total applications
     const totalApplications = await Application.countDocuments({
@@ -43,70 +42,55 @@ export const recruiterDashboard = async (req, res) => {
         totalApplications,
       },
     });
-
   } catch (error) {
-
     return res.status(500).json({
       message: error.message,
     });
-
   }
 };
 
 export const recentJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find({
+      recruiter: req.user._id,
+    })
+      .sort({ createdAt: -1 })
+      .limit(5);
 
-    try {
-
-        const jobs = await Job.find({
-            recruiter: req.user._id,
-        })
-        .sort({ createdAt: -1 })
-        .limit(5);
-
-        res.status(200).json({
-            success: true,
-            jobs,
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            message: error.message,
-        });
-
-    }
-
+    res.status(200).json({
+      success: true,
+      jobs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 export const recentApplications = async (req, res) => {
+  try {
+    const jobs = await Job.find({
+      recruiter: req.user._id,
+    });
 
-    try {
+    const jobIds = jobs.map((job) => job._id);
 
-        const jobs = await Job.find({
-            recruiter: req.user._id,
-        });
+    const applications = await Application.find({
+      job: { $in: jobIds },
+    })
+      .populate("candidate", "name email")
+      .populate("job", "title company")
+      .sort({ createdAt: -1 })
+      .limit(5);
 
-        const jobIds = jobs.map(job => job._id);
-
-        const applications = await Application.find({
-            job: { $in: jobIds },
-        })
-        .populate("candidate", "name email")
-        .populate("job", "title company")
-        .sort({ createdAt: -1 })
-        .limit(5);
-
-        res.status(200).json({
-            success: true,
-            applications,
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            message: error.message,
-        });
-
-    }
-
+    res.status(200).json({
+      success: true,
+      applications,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };

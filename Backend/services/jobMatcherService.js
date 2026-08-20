@@ -19,7 +19,7 @@ export const matchJobsWithResume = async (resumeAnalysis, jobs) => {
       missingSkills: resumeAnalysis.missingSkills,
     };
 
-    const response = await gemini.models.generateContent({
+    const response = await gemini.Models.generateContent({
       model: "gemini-3.6-flash",
 
       contents: `

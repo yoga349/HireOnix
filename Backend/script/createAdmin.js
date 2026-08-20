@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import User from "../models/User.js";
+import User from "../Models/User.js";
 
 dotenv.config();
 
@@ -17,10 +17,7 @@ const createAdmin = async () => {
       process.exit(0);
     }
 
-    const hashedPassword = await bcrypt.hash(
-      process.env.ADMIN_PASSWORD,
-      10
-    );
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
 
     await User.create({
       name: process.env.ADMIN_NAME,

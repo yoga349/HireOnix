@@ -1,5 +1,5 @@
-import Job from "../models/Job.js";
-import Application from "../models/Application.js";
+import Job from "../Models/Job.js";
+import Application from "../Models/Application.js";
 
 export const getRecruiterAnalytics = async (req, res) => {
   try {
@@ -16,17 +16,11 @@ export const getRecruiterAnalytics = async (req, res) => {
     const totalJobs = jobs.length;
 
     // Job statistics
-    const activeJobs = jobs.filter(
-      (job) => job.status === "active"
-    ).length;
+    const activeJobs = jobs.filter((job) => job.status === "active").length;
 
-    const expiredJobs = jobs.filter(
-      (job) => job.status === "expired"
-    ).length;
+    const expiredJobs = jobs.filter((job) => job.status === "expired").length;
 
-    const closedJobs = jobs.filter(
-      (job) => job.status === "closed"
-    ).length;
+    const closedJobs = jobs.filter((job) => job.status === "closed").length;
 
     // Total applications
     const totalApplications = await Application.countDocuments({
@@ -80,7 +74,6 @@ export const getRecruiterAnalytics = async (req, res) => {
         },
       },
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,

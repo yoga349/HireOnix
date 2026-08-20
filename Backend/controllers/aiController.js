@@ -1,6 +1,6 @@
-import Profile from "../models/Profile.js";
-import ResumeAnalysis from "../models/ResumeAnalysis.js";
-import Job from "../models/Job.js";
+import Profile from "../Models/Profile.js";
+import ResumeAnalysis from "../Models/ResumeAnalysis.js";
+import Job from "../Models/Job.js";
 import { matchJobsWithResume } from "../services/jobMatcherService.js";
 import { extractResumeText } from "../services/resumeParser.js";
 import { analyzeResume } from "../services/aiService.js";
@@ -27,7 +27,7 @@ export const analyzeCandidateResume = async (req, res) => {
         message: "Please upload a resume first",
       });
     }
-    // check for the existing resume 
+    // check for the existing resume
     const existingAnalysis = await ResumeAnalysis.findOne({
       candidate: req.user._id,
       resumeUrl: profile.resume,

@@ -1,4 +1,4 @@
-import Job from "../models/Job.js";
+import Job from "../Models/Job.js";
 
 export const createJob = async (req, res) => {
   try {
@@ -122,7 +122,6 @@ export const getAllJobs = async (req, res) => {
       totalPages: Math.ceil(totalJobs / Number(limit)),
       jobs,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -135,7 +134,7 @@ export const getJobById = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id).populate(
       "recruiter",
-      "name email"
+      "name email",
     );
 
     if (!job) {
@@ -171,13 +170,9 @@ export const updateJob = async (req, res) => {
       });
     }
 
-    const updatedJob = await Job.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-      }
-    );
+    const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
 
     return res.status(200).json({
       success: true,
@@ -233,17 +228,14 @@ export const updateExpiredJobs = async (req, res) => {
         $set: {
           status: "expired",
         },
-      }
+      },
     );
-
-    
 
     return res.status(200).json({
       success: true,
       message: "Expired jobs updated successfully",
       expiredJobs: result.modifiedCount,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,

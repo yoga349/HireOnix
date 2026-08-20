@@ -20,7 +20,7 @@ export const getJobRecommendations = async (resumeAnalysis, jobs) => {
       workMode: job.workMode,
     }));
 
-    const response = await gemini.models.generateContent({
+    const response = await gemini.Models.generateContent({
       model: "gemini-3.6-flash",
 
       contents: `
@@ -82,11 +82,7 @@ Important rules:
                   },
                 },
 
-                required: [
-                  "jobId",
-                  "matchScore",
-                  "reason",
-                ],
+                required: ["jobId", "matchScore", "reason"],
               },
             },
           },
@@ -108,10 +104,7 @@ ${JSON.stringify(jobData, null, 2)}
 
     return JSON.parse(response.text);
   } catch (error) {
-    console.error(
-      "Job Recommendation AI Error:",
-      error.message
-    );
+    console.error("Job Recommendation AI Error:", error.message);
 
     throw new Error("Unable to generate job recommendations");
   }

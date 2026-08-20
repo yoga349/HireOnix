@@ -2,7 +2,7 @@ import gemini from "../config/gemini.js";
 
 export const analyzeResume = async (resumeText) => {
   try {
-    const response = await gemini.models.generateContent({
+    const response = await gemini.Models.generateContent({
       model: "gemini-3.6-flash",
 
       contents: `

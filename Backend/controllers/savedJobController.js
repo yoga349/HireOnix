@@ -1,5 +1,5 @@
-import SavedJob from "../models/SavedJob.js";
-import Job from "../models/Job.js";
+import SavedJob from "../Models/SavedJob.js";
+import Job from "../Models/Job.js";
 
 // Save a job
 export const saveJob = async (req, res) => {
@@ -37,7 +37,6 @@ export const saveJob = async (req, res) => {
       message: "Job saved successfully",
       savedJob,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -66,7 +65,6 @@ export const getSavedJobs = async (req, res) => {
       total: savedJobs.length,
       savedJobs,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -96,7 +94,6 @@ export const removeSavedJob = async (req, res) => {
       success: true,
       message: "Job removed from saved list",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,

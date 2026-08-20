@@ -1,4 +1,4 @@
-import Profile from "../models/Profile.js";
+import Profile from "../Models/Profile.js";
 
 export const createOrUpdateProfile = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ export const createOrUpdateProfile = async (req, res) => {
       {
         new: true,
         upsert: true,
-      }
+      },
     );
 
     return res.status(200).json({
@@ -19,7 +19,6 @@ export const createOrUpdateProfile = async (req, res) => {
       message: "Profile saved successfully",
       profile,
     });
-
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -43,7 +42,6 @@ export const getMyProfile = async (req, res) => {
       success: true,
       profile,
     });
-
   } catch (error) {
     return res.status(500).json({
       message: error.message,
