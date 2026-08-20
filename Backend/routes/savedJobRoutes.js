@@ -5,9 +5,8 @@ import {
   removeSavedJob,
 } from "../controllers/savedJobController.js";
 
-import { protect } from "../middleware/authMiddleware.js";
-import { candidateOnly } from "../middleware/roleMiddleware.js";
-
+import { protect } from "../Middleware/authMiddleware.js";
+import { candidateOnly } from "../Middleware/roleMiddleware.js";
 
 const router = express.Router();
 

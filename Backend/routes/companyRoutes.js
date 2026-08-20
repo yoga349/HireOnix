@@ -8,8 +8,8 @@ import {
   getCompanyById,
 } from "../controllers/companyController.js";
 
-import { protect } from "../middleware/authMiddleware.js";
-import { recruiterOnly } from "../middleware/roleMiddleware.js";
+import { protect } from "../Middleware/authMiddleware.js";
+import { recruiterOnly } from "../Middleware/roleMiddleware.js";
 
 const router = express.Router();
 
