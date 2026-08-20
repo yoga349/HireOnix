@@ -18,7 +18,6 @@ import adminRoutes from "./routes/adminRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import multer from "multer";
-import mongoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
 dotenv.config();
 
@@ -40,7 +39,6 @@ app.use(express.json());
 //     limit: "1mb",
 //   })
 // );
-app.use(mongoSanitize());
 app.use(helmet());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);

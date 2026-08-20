@@ -14,7 +14,6 @@ const createAdmin = async () => {
     });
 
     if (existingAdmin) {
-      console.log("Admin already exists.");
       process.exit(0);
     }
 
@@ -23,18 +22,14 @@ const createAdmin = async () => {
       10
     );
 
-    const admin = await User.create({
+    await User.create({
       name: process.env.ADMIN_NAME,
       email: process.env.ADMIN_EMAIL,
       password: hashedPassword,
       role: "admin",
     });
 
-    console.log("Admin created successfully.");
-    console.log("Admin email:", admin.email);
-
     process.exit(0);
-
   } catch (error) {
     console.error("Error creating admin:", error.message);
     process.exit(1);
