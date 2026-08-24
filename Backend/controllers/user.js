@@ -30,18 +30,8 @@ export const registerUser = async (req, res) => {
       role,
     });
 
-    // Send welcome email 
-    try {
-      await sendEmail(
-        user.email,
-        "Welcome to HireOnix 🎉",
-        welcomeEmail(user.name),
-      );
-    } catch (emailError) {
-      console.error("Welcome email failed:", emailError);
-    }
-
-    return res.status(201).json({
+    // Send response immediately
+    res.status(201).json({
       success: true,
       message: "User registered successfully",
       user: {
@@ -51,6 +41,20 @@ export const registerUser = async (req, res) => {
         role: user.role,
       },
     });
+
+    // Send welcome email in the background
+    sendEmail(
+      user.email,
+      "Welcome to HireOnix 🎉",
+      welcomeEmail(user.name)
+    )
+      .then(() => {
+        console.log(`Welcome email sent to ${user.email}`);
+      })
+      .catch((emailError) => {
+        console.error("Welcome email failed:", emailError);
+      });
+
   } catch (error) {
     console.error("Registration error:", error);
 
@@ -59,3 +63,4 @@ export const registerUser = async (req, res) => {
     });
   }
 };
+
