@@ -1,7 +1,5 @@
 import User from "../Models/User.js";
 import bcrypt from "bcryptjs";
-import sendEmail from "../utils/sendEmail.js";
-import { welcomeEmail } from "../templates/welcomeMail.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -30,8 +28,7 @@ export const registerUser = async (req, res) => {
       role,
     });
 
-    // Send response immediately
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "User registered successfully",
       user: {
@@ -41,20 +38,6 @@ export const registerUser = async (req, res) => {
         role: user.role,
       },
     });
-
-    // Send welcome email in the background
-    sendEmail(
-      user.email,
-      "Welcome to HireOnix 🎉",
-      welcomeEmail(user.name)
-    )
-      .then(() => {
-        console.log(`Welcome email sent to ${user.email}`);
-      })
-      .catch((emailError) => {
-        console.error("Welcome email failed:", emailError);
-      });
-
   } catch (error) {
     console.error("Registration error:", error);
 
@@ -63,4 +46,3 @@ export const registerUser = async (req, res) => {
     });
   }
 };
-
