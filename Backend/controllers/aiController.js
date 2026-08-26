@@ -8,7 +8,6 @@ import { getJobRecommendations } from "../services/recommendationService.js";
 
 export const analyzeCandidateResume = async (req, res) => {
   try {
-    // Find candidate profile
     const profile = await Profile.findOne({
       user: req.user._id,
     });
@@ -20,17 +19,19 @@ export const analyzeCandidateResume = async (req, res) => {
       });
     }
 
-    // Check resume exists
-    if (!profile.resume) {
+    const { resumeUrl } = req.body;
+    const resumeToAnalyze = resumeUrl || profile.resume;
+
+    if (!resumeToAnalyze) {
       return res.status(400).json({
         success: false,
         message: "Please upload a resume first",
       });
     }
-    // check for the existing resume
+
     const existingAnalysis = await ResumeAnalysis.findOne({
       candidate: req.user._id,
-      resumeUrl: profile.resume,
+      resumeUrl: resumeToAnalyze,
     });
 
     if (existingAnalysis) {
@@ -40,8 +41,8 @@ export const analyzeCandidateResume = async (req, res) => {
         analysis: existingAnalysis,
       });
     }
-    // Extract text from PDF
-    const resumeText = await extractResumeText(profile.resume);
+
+    const resumeText = await extractResumeText(resumeToAnalyze);
 
     if (!resumeText || !resumeText.trim()) {
       return res.status(400).json({
@@ -50,13 +51,11 @@ export const analyzeCandidateResume = async (req, res) => {
       });
     }
 
-    // Analyze resume using OpenAI
     const analysis = await analyzeResume(resumeText);
 
-    // Save analysis
     const resumeAnalysis = await ResumeAnalysis.create({
       candidate: req.user._id,
-      resumeUrl: profile.resume,
+      resumeUrl: resumeToAnalyze,
       score: analysis.score,
       summary: analysis.summary,
       skills: analysis.skills,
@@ -101,7 +100,6 @@ export const getResumeAnalyses = async (req, res) => {
 
 export const getJobMatches = async (req, res) => {
   try {
-    // Get latest resume analysis
     const resumeAnalysis = await ResumeAnalysis.findOne({
       candidate: req.user._id,
     }).sort({ createdAt: -1 });
@@ -113,7 +111,6 @@ export const getJobMatches = async (req, res) => {
       });
     }
 
-    // Get active jobs
     const jobs = await Job.find({
       status: "active",
     })
@@ -129,10 +126,8 @@ export const getJobMatches = async (req, res) => {
       });
     }
 
-    // Send candidate + jobs to AI
     const matchingResult = await matchJobsWithResume(resumeAnalysis, jobs);
 
-    // Attach complete job information
     const matches = matchingResult.matches
       .map((match) => {
         const job = jobs.find((job) => job._id.toString() === match.jobId);
@@ -167,7 +162,6 @@ export const getJobMatches = async (req, res) => {
 
 export const getRecommendations = async (req, res) => {
   try {
-    // Get latest resume analysis
     const resumeAnalysis = await ResumeAnalysis.findOne({
       candidate: req.user._id,
     }).sort({ createdAt: -1 });
@@ -179,7 +173,6 @@ export const getRecommendations = async (req, res) => {
       });
     }
 
-    // Get active jobs
     const jobs = await Job.find({
       status: "active",
     })
@@ -195,22 +188,18 @@ export const getRecommendations = async (req, res) => {
       });
     }
 
-    // Generate recommendations
     const recommendationResult = await getJobRecommendations(
       resumeAnalysis,
       jobs,
     );
 
-    // Attach complete job information
     const recommendations = recommendationResult.recommendations
       .map((recommendation) => {
         const job = jobs.find(
           (job) => job._id.toString() === recommendation.jobId,
         );
 
-        if (!job) {
-          return null;
-        }
+        if (!job) return null;
 
         return {
           job,
