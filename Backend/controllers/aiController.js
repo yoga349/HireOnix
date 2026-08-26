@@ -19,7 +19,7 @@ export const analyzeCandidateResume = async (req, res) => {
       });
     }
 
-    const { resumeUrl } = req.body;
+    const resumeUrl = req.body?.resumeUrl;
     const resumeToAnalyze = resumeUrl || profile.resume;
 
     if (!resumeToAnalyze) {
@@ -115,7 +115,7 @@ export const getJobMatches = async (req, res) => {
       status: "active",
     })
       .select(
-        "title description company location skills experience jobType workMode",
+        "title description company location skills experience jobType workMode"
       )
       .limit(20);
 
@@ -126,11 +126,16 @@ export const getJobMatches = async (req, res) => {
       });
     }
 
-    const matchingResult = await matchJobsWithResume(resumeAnalysis, jobs);
+    const matchingResult = await matchJobsWithResume(
+      resumeAnalysis,
+      jobs
+    );
 
     const matches = matchingResult.matches
       .map((match) => {
-        const job = jobs.find((job) => job._id.toString() === match.jobId);
+        const job = jobs.find(
+          (job) => job._id.toString() === match.jobId
+        );
 
         if (!job) return null;
 
@@ -177,7 +182,7 @@ export const getRecommendations = async (req, res) => {
       status: "active",
     })
       .select(
-        "title description company location skills experience jobType workMode",
+        "title description company location skills experience jobType workMode"
       )
       .limit(20);
 
@@ -190,13 +195,14 @@ export const getRecommendations = async (req, res) => {
 
     const recommendationResult = await getJobRecommendations(
       resumeAnalysis,
-      jobs,
+      jobs
     );
 
     const recommendations = recommendationResult.recommendations
       .map((recommendation) => {
         const job = jobs.find(
-          (job) => job._id.toString() === recommendation.jobId,
+          (job) =>
+            job._id.toString() === recommendation.jobId
         );
 
         if (!job) return null;
