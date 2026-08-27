@@ -2,9 +2,8 @@ import gemini from "../config/gemini.js";
 
 export const analyzeResume = async (resumeText) => {
   try {
-    const response = await gemini.Models.generateContent({
+    const response = await gemini.models.generateContent({
       model: "gemini-3.6-flash",
-
       contents: `
 You are an expert resume analyzer for a job portal called Hireonix.
 
@@ -35,43 +34,35 @@ Analyze the following resume:
 ${resumeText}
 --- RESUME END ---
 `,
-
       config: {
         responseMimeType: "application/json",
-
         responseSchema: {
           type: "object",
-
           properties: {
             score: {
               type: "number",
             },
-
             summary: {
               type: "string",
             },
-
             skills: {
               type: "array",
               items: {
                 type: "string",
               },
             },
-
             missingSkills: {
               type: "array",
               items: {
                 type: "string",
               },
             },
-
             strengths: {
               type: "array",
               items: {
                 type: "string",
               },
             },
-
             suggestions: {
               type: "array",
               items: {
@@ -79,7 +70,6 @@ ${resumeText}
               },
             },
           },
-
           required: [
             "score",
             "summary",
@@ -95,7 +85,6 @@ ${resumeText}
     return JSON.parse(response.text);
   } catch (error) {
     console.error("AI Resume Analysis Error:", error.message);
-
     throw new Error("Unable to analyze resume");
   }
 };
