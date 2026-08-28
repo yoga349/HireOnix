@@ -46,6 +46,11 @@ const Sidebar = () => {
       path: "/candidate/resume-analyzer",
       icon: Sparkles,
     },
+     {
+      name: "Job Matcher",
+      path: "/candidate/job-matcher",
+      icon: Sparkles,
+    },
     {
       name: "Profile",
       path: "/candidate/profile",
@@ -79,11 +84,7 @@ const Sidebar = () => {
       path: "/recruiter/analytics",
       icon: BarChart3,
     },
-    {
-      name: "Job Matcher",
-      path: "/candidate/job-matcher",
-      icon: Sparkles,
-    },
+   
     {
       name: "Profile",
       path: "/recruiter/profile",
