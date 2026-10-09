@@ -20,11 +20,11 @@ import Analytics from "./pages/recruiter/Analytics";
 import Company from "./pages/recruiter/Company";
 import CompanyDetails from "./pages/recruiter/CompanyDetails";
 import RecProfile from "./pages/recruiter/RecProfile";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import Users from "./pages/admin/Users";
-import Job from "./pages/admin/Job";
-import Application from "./pages/admin/Application";
-import Companies from "./pages/admin/Companies";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import Users from "./pages/Admin/Users";
+import Job from "./pages/Admin/Job";
+import Application from "./pages/Admin/Application";
+import Companies from "./pages/Admin/Companies";
 function App() {
   return (
     <BrowserRouter>
