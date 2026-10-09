@@ -25,6 +25,7 @@ import Users from "./pages/Admin/Users";
 import Job from "./pages/Admin/Job";
 import Application from "./pages/Admin/Application";
 import Companies from "./pages/Admin/Companies";
+import Home from "./pages/Home";
 function App() {
   return (
     <BrowserRouter>
@@ -77,6 +78,7 @@ function App() {
             <Route path="/admin/companies" element={<Companies />} />
           </Route>
         </Route>
+        <Route path="/" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );
