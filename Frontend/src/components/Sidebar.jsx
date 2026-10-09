@@ -11,13 +11,13 @@ import {
   LogOut,
 } from "lucide-react";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const user = JSON.parse(localStorage.getItem("user"));
-
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const role = user?.role;
 
   const candidateLinks = [
@@ -46,11 +46,6 @@ const Sidebar = () => {
       path: "/candidate/resume-analyzer",
       icon: Sparkles,
     },
-     {
-      name: "Job Matcher",
-      path: "/candidate/job-matcher",
-      icon: Sparkles,
-    },
     {
       name: "Profile",
       path: "/candidate/profile",
@@ -70,11 +65,6 @@ const Sidebar = () => {
       icon: BriefcaseBusiness,
     },
     {
-      name: "Applicants",
-      path: "/recruiter/applicants",
-      icon: Users,
-    },
-    {
       name: "Company",
       path: "/recruiter/company",
       icon: Building2,
@@ -84,7 +74,6 @@ const Sidebar = () => {
       path: "/recruiter/analytics",
       icon: BarChart3,
     },
-   
     {
       name: "Profile",
       path: "/recruiter/profile",
@@ -92,7 +81,41 @@ const Sidebar = () => {
     },
   ];
 
-  const links = role === "candidate" ? candidateLinks : recruiterLinks;
+  const adminLinks = [
+    {
+      name: "Dashboard",
+      path: "/admin/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Users",
+      path: "/admin/users",
+      icon: Users,
+    },
+    {
+      name: "Jobs",
+      path: "/admin/jobs",
+      icon: BriefcaseBusiness,
+    },
+    {
+      name: "Applications",
+      path: "/admin/applications",
+      icon: FileText,
+    },
+    {
+      name: "Companies",
+      path: "/admin/companies",
+      icon: Building2,
+    },
+   
+  ];
+
+  const links =
+    role === "candidate"
+      ? candidateLinks
+      : role === "recruiter"
+        ? recruiterLinks
+        : adminLinks;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -107,11 +130,19 @@ const Sidebar = () => {
         {links.map((link) => {
           const Icon = link.icon;
 
+          const isActive =
+            location.pathname === link.path ||
+            location.pathname.startsWith(`${link.path}/`);
+
           return (
             <Link
               key={link.path}
               to={link.path}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-[#087443]/5 hover:text-[#087443] transition"
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                isActive
+                  ? "bg-[#087443]/10 text-[#087443] font-semibold"
+                  : "text-gray-600 hover:bg-[#087443]/5 hover:text-[#087443]"
+              }`}
             >
               <Icon size={19} />
 
